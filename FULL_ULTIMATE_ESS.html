@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Activity Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 95%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .header h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .week-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+        }
+        
+        .week-selector label {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .week-selector input[type="date"] {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .week-nav-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .week-nav-btn {
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            min-width: 40px;
+        }
+        
+        .week-nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .week-display {
+            font-weight: 600;
+            color: #2d3748;
+            padding: 8px 16px;
+            background: white;
+            border-radius: 8px;
+            min-width: 200px;
+            text-align: center;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1f2937;
+        }
+        
+        .btn-small {
+            padding: 6px 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            min-width: 36px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 12px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 1200px;
+            background: white;
+        }
+        
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+        
+        .day-total {
+            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
+            font-weight: 700;
+            color: #5b21b6;
+            text-align: center;
+        }
+        
+        td input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        td input[type="number"] {
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        td input[readonly] {
+            background: #f8fafc;
+            cursor: pointer;
+            border-color: #cbd5e1;
+            position: relative;
+        }
+        
+        td {
+            position: relative;
+        }
+        
+        /* Tooltip container */
+        .tooltip-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .tooltip-wrapper .tooltip-text {
+            visibility: hidden;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+            white-space: normal;
+            max-width: 350px;
+            width: max-content;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            z-index: 1000;
+            line-height: 1.4;
+            pointer-events: none;
+        }
+        
+        .tooltip-wrapper .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #111827;
+        }
+        
+        .tooltip-wrapper:hover .tooltip-text {
+            visibility: visible;
+        }
+        
+        /* Specific field widths */
+        .field-activity input {
+            width: 22ch;
+            min-width: 22ch;
+        }
+        
+        .field-cost input {
+            width: 10ch;
+            min-width: 10ch;
+        }
+        
+        .field-rec input {
+            width: 13ch;
+            min-width: 13ch;
+        }
+        
+        .field-comment input {
+            width: 20ch;
+            min-width: 20ch;
+        }
+        
+        .total-hours-cell {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            font-weight: 700;
+            text-align: center;
+            color: #92400e;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            max-width: 550px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .modal-body {
+            margin-bottom: 25px;
+        }
+        
+        .modal-body label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .modal-body input, .modal-body select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            font-weight: 500;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Weekly Activity Tracker</h1>
+            <div class="header-buttons">
+                <button class="btn-primary" onclick="downloadJSON()">📤 Export JSON</button>
+                <button class="btn-success" onclick="importJSON()">📥 Import JSON</button>
+                <button class="btn-danger" onclick="clearAllData()">🗑️ Clear All</button>
+            </div>
+        </div>
+        
+        <div class="week-selector">
+            <label for="weekPicker">Select Week:</label>
+            <input type="date" id="weekPicker" onchange="loadWeek()">
+            <div class="week-nav-buttons">
+                <button class="week-nav-btn" onclick="previousWeek()" title="Previous Week">⬇️</button>
+                <button class="week-nav-btn" onclick="nextWeek()" title="Next Week">⬆️</button>
+            </div>
+            <span class="week-display" id="weekDisplay"></span>
+        </div>
+        
+        <div class="controls">
+            <button class="btn-primary" onclick="showAddModal()">➕ Add Entry</button>
+            <button class="btn-secondary" onclick="hideEmptyRows()">👁️ Hide Empty Rows</button>
+            <button class="btn-secondary" onclick="unhideAllRows()">👁️ Unhide All</button>
+            <button class="btn-success" onclick="captureHours()">📋 Capture Hours</button>
+        </div>
+        
+        <div id="alertContainer"></div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Actions</th>
+                        <th>Activity</th>
+                        <th>Cost Centre</th>
+                        <th>Activity Type</th>
+                        <th>Rec Order</th>
+                        <th>Attribute Type</th>
+                        <th>Comment</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Total Hours</th>
+                    </tr>
+                    <tr>
+                        <td colspan="7" style="text-align: right; font-weight: 600;">Daily Totals:</td>
+                        <td class="day-total" id="totMon">0.0</td>
+                        <td class="day-total" id="totTue">0.0</td>
+                        <td class="day-total" id="totWed">0.0</td>
+                        <td class="day-total" id="totThu">0.0</td>
+                        <td class="day-total" id="totFri">0.0</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Non-case entries will appear here first -->
+                    <!-- Case entries will appear here after -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Add New Entry</div>
+            <div class="modal-body">
+                <label>Activity Name *</label>
+                <input type="text" id="modalActivity">
+                
+                <label>Entry Type *</label>
+                <select id="modalType" onchange="toggleInitialHours()">
+                    <option value="case">Case</option>
+                    <option value="non-case">Non-Case</option>
+                </select>
+                
+                <div id="initialHoursDiv">
+                    <label>Initial Accumulated Hours</label>
+                    <input type="number" id="modalInitial" value="0" step="0.5" min="0">
+                </div>
+                
+                <label>Cost Centre</label>
+                <input type="text" id="modalCost">
+                
+                <label>Activity Type</label>
+                <input type="text" id="modalActType">
+                
+                <label>Rec Order</label>
+                <input type="text" id="modalRec">
+                
+                <label>Attribute Type</label>
+                <input type="text" id="modalAttr">
+                
+                <label>Comment</label>
+                <input type="text" id="modalComment">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeAddModal()">Cancel</button>
+                <button class="btn-primary" id="modalSaveBtn" onclick="saveEntry()">Add Entry</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Confirm Action</div>
+            <div class="modal-body">
+                <p id="confirmMsg"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeConfirm()">Cancel</button>
+                <button class="btn-danger" onclick="doConfirm()">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <input type="file" id="fileInput" style="display:none" accept=".json">
+
+    <script>
+        let data = { entries: [], weekData: {} };
+        let currentWeek = null;
+        let confirmFunc = null;
+        let editingEntryId = null; // Track which entry is being edited
+
+        // Initialize
+        function init() {
+            loadFromStorage();
+            setCurrentWeek();
+            loadWeek();
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem('timesheetData');
+            if (saved) {
+                try {
+                    data = JSON.parse(saved);
+                } catch(e) {
+                    console.error('Error loading data:', e);
+                }
+            }
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('timesheetData', JSON.stringify(data));
+        }
+
+        function getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            
+            // If Saturday (6) or Sunday (0), get the Monday of the previous week
+            if (day === 0) {
+                // Sunday - go back 6 days to get previous Monday
+                d.setDate(d.getDate() - 6);
+            } else if (day === 6) {
+                // Saturday - go back 5 days to get previous Monday
+                d.setDate(d.getDate() - 5);
+            } else {
+                // Weekday - get Monday of current week
+                const diff = d.getDate() - day + 1;
+                d.setDate(diff);
+            }
+            
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function setCurrentWeek() {
+            const today = new Date();
+            currentWeek = getWeekStart(today);
+            document.getElementById('weekPicker').value = formatDate(currentWeek);
+        }
+
+        function loadWeek() {
+            const selected = document.getElementById('weekPicker').value;
+            if (selected) {
+                currentWeek = getWeekStart(new Date(selected));
+            }
+            updateWeekDisplay();
+            renderTable();
+        }
+
+        function updateWeekDisplay() {
+            const friday = new Date(currentWeek);
+            friday.setDate(friday.getDate() + 4); // Monday + 4 days = Friday
+            
+            const opts = { month: 'short', day: 'numeric', year: 'numeric' };
+            const startStr = currentWeek.toLocaleDateString('en-US', opts);
+            const endStr = friday.toLocaleDateString('en-US', opts);
+            
+            document.getElementById('weekDisplay').textContent = `${startStr} - ${endStr}`;
+            
+            // Update date picker to reflect current week's Monday
+            document.getElementById('weekPicker').value = formatDate(currentWeek);
+        }
+
+        function previousWeek() {
+            currentWeek.setDate(currentWeek.getDate() - 7);
+            updateWeekDisplay();
+            renderTable();
+        }
+
+        function nextWeek() {
+            currentWeek.setDate(currentWeek.getDate() + 7);
+            updateWeekDisplay();
+            renderTable();
+        }
+
+        function getWeekKey() {
+            return formatDate(currentWeek);
+        }
+
+        function showAddModal() {
+            editingEntryId = null; // Clear editing mode
+            document.getElementById('modalTitle').textContent = 'Add New Entry';
+            document.getElementById('modalSaveBtn').textContent = 'Add Entry';
+            document.getElementById('addModal').classList.add('active');
+            document.getElementById('modalActivity').value = '';
+            document.getElementById('modalType').value = 'case';
+            document.getElementById('modalInitial').value = '0';
+            document.getElementById('modalCost').value = '';
+            document.getElementById('modalActType').value = '';
+            document.getElementById('modalRec').value = '';
+            document.getElementById('modalAttr').value = '';
+            document.getElementById('modalComment').value = '';
+            toggleInitialHours();
+        }
+
+        function openEditModal(entryId) {
+            const entry = data.entries.find(e => e.id === entryId);
+            if (!entry) return;
+            
+            editingEntryId = entryId; // Set editing mode
+            document.getElementById('modalTitle').textContent = 'Edit Entry';
+            document.getElementById('modalSaveBtn').textContent = 'Save Changes';
+            document.getElementById('addModal').classList.add('active');
+            document.getElementById('modalActivity').value = entry.activity;
+            document.getElementById('modalType').value = entry.entryType;
+            document.getElementById('modalInitial').value = entry.totalHours || 0;
+            document.getElementById('modalCost').value = entry.costCentre || '';
+            document.getElementById('modalActType').value = entry.activityType || '';
+            document.getElementById('modalRec').value = entry.recOrder || '';
+            document.getElementById('modalAttr').value = entry.attributeType || '';
+            document.getElementById('modalComment').value = entry.comment || '';
+            toggleInitialHours();
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.remove('active');
+            editingEntryId = null;
+        }
+
+        function toggleInitialHours() {
+            const type = document.getElementById('modalType').value;
+            const div = document.getElementById('initialHoursDiv');
+            div.style.display = type === 'case' ? 'block' : 'none';
+        }
+
+        function saveEntry() {
+            const activity = document.getElementById('modalActivity').value.trim();
+            if (!activity) {
+                showAlert('Please enter an activity name', 'danger');
+                return;
+            }
+
+            const type = document.getElementById('modalType').value;
+            const initial = parseFloat(document.getElementById('modalInitial').value) || 0;
+
+            if (editingEntryId) {
+                // EDIT MODE: Update existing entry
+                const entry = data.entries.find(e => e.id === editingEntryId);
+                if (entry) {
+                    entry.activity = activity;
+                    entry.entryType = type;
+                    entry.totalHours = type === 'case' ? initial : 0;
+                    entry.costCentre = document.getElementById('modalCost').value;
+                    entry.activityType = document.getElementById('modalActType').value;
+                    entry.recOrder = document.getElementById('modalRec').value;
+                    entry.attributeType = document.getElementById('modalAttr').value;
+                    entry.comment = document.getElementById('modalComment').value;
+                    
+                    saveToStorage();
+                    renderTable();
+                    closeAddModal();
+                    showAlert('Entry updated successfully!', 'success');
+                }
+            } else {
+                // ADD MODE: Check for duplicate and create new entry
+                const exists = data.entries.find(e => e.activity.toLowerCase() === activity.toLowerCase());
+                if (exists) {
+                    showAlert('Activity already exists. Use Edit to modify it.', 'danger');
+                    return;
+                }
+
+                const entry = {
+                    id: Date.now().toString(),
+                    activity: activity,
+                    entryType: type,
+                    costCentre: document.getElementById('modalCost').value,
+                    activityType: document.getElementById('modalActType').value,
+                    recOrder: document.getElementById('modalRec').value,
+                    attributeType: document.getElementById('modalAttr').value,
+                    comment: document.getElementById('modalComment').value,
+                    totalHours: type === 'case' ? initial : 0,
+                    hidden: false
+                };
+
+                data.entries.push(entry);
+                saveToStorage();
+                renderTable();
+                closeAddModal();
+                showAlert('Entry added successfully!', 'success');
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            const weekKey = getWeekKey();
+
+            // Separate and sort entries: Non-Case first, then Case (both in creation order)
+            const nonCaseEntries = data.entries.filter(e => !e.hidden && e.entryType === 'non-case');
+            const caseEntries = data.entries.filter(e => !e.hidden && e.entryType === 'case');
+            const sortedEntries = [...nonCaseEntries, ...caseEntries];
+
+            sortedEntries.forEach(entry => {
+                const row = tbody.insertRow();
+                
+                // Actions - icons only, side by side
+                const actCell = row.insertCell();
+                actCell.style.whiteSpace = 'nowrap';
+                
+                const editBtn = document.createElement('button');
+                editBtn.textContent = '✏️';
+                editBtn.className = 'btn-primary btn-small';
+                editBtn.onclick = () => openEditModal(entry.id);
+                editBtn.title = 'Edit';
+                actCell.appendChild(editBtn);
+                
+                const hideBtn = document.createElement('button');
+                hideBtn.textContent = '👁️';
+                hideBtn.className = 'btn-secondary btn-small';
+                hideBtn.onclick = () => hideRow(entry.id);
+                hideBtn.title = 'Hide';
+                hideBtn.style.marginLeft = '5px';
+                actCell.appendChild(hideBtn);
+
+                // Locked fields with tooltips
+                addLockedCell(row, entry, 'activity');
+                addLockedCell(row, entry, 'costCentre');
+                addLockedCell(row, entry, 'activityType');
+                addLockedCell(row, entry, 'recOrder');
+                addLockedCell(row, entry, 'attributeType');
+                addLockedCell(row, entry, 'comment');
+
+                // Days (Mon-Fri only) - editable
+                const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+                days.forEach(day => {
+                    const cell = row.insertCell();
+                    const inp = document.createElement('input');
+                    inp.type = 'number';
+                    inp.step = '0.5';
+                    inp.min = '0';
+                    inp.value = getHours(entry.id, weekKey, day) || '';
+                    inp.onchange = () => setHours(entry.id, weekKey, day, inp.value);
+                    cell.appendChild(inp);
+                });
+
+                // Total hours
+                const totCell = row.insertCell();
+                totCell.className = 'total-hours-cell';
+                totCell.textContent = entry.entryType === 'case' ? entry.totalHours.toFixed(1) : '-';
+            });
+
+            updateDailyTotals();
+        }
+
+        function addLockedCell(row, entry, field) {
+            const cell = row.insertCell();
+            
+            // Create tooltip wrapper
+            const wrapper = document.createElement('div');
+            wrapper.className = 'tooltip-wrapper';
+            
+            const inp = document.createElement('input');
+            inp.type = 'text';
+            inp.value = entry[field] || '';
+            inp.setAttribute('readonly', 'true');
+            
+            // Create tooltip text element
+            const tooltipText = document.createElement('span');
+            tooltipText.className = 'tooltip-text';
+            tooltipText.textContent = entry[field] || '';
+            
+            wrapper.appendChild(inp);
+            wrapper.appendChild(tooltipText);
+            
+            // Add specific field classes for width control
+            if (field === 'activity') cell.className = 'field-activity';
+            else if (field === 'costCentre') cell.className = 'field-cost';
+            else if (field === 'recOrder') cell.className = 'field-rec';
+            else if (field === 'comment') cell.className = 'field-comment';
+            
+            cell.appendChild(wrapper);
+        }
+
+        function getHours(entryId, weekKey, day) {
+            if (!data.weekData[weekKey]) return 0;
+            if (!data.weekData[weekKey][entryId]) return 0;
+            return data.weekData[weekKey][entryId][day] || 0;
+        }
+
+        function setHours(entryId, weekKey, day, value) {
+            if (!data.weekData[weekKey]) data.weekData[weekKey] = {};
+            if (!data.weekData[weekKey][entryId]) data.weekData[weekKey][entryId] = {};
+            
+            const old = data.weekData[weekKey][entryId][day] || 0;
+            const newVal = parseFloat(value) || 0;
+            data.weekData[weekKey][entryId][day] = newVal;
+
+            const entry = data.entries.find(e => e.id === entryId);
+            if (entry && entry.entryType === 'case') {
+                entry.totalHours = entry.totalHours - old + newVal;
+            }
+
+            saveToStorage();
+            updateDailyTotals();
+            renderTable();
+        }
+
+        function updateDailyTotals() {
+            const weekKey = getWeekKey();
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+            const ids = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
+            days.forEach((day, i) => {
+                let total = 0;
+                data.entries.forEach(entry => {
+                    if (!entry.hidden) {
+                        total += getHours(entry.id, weekKey, day);
+                    }
+                });
+                document.getElementById(`tot${ids[i]}`).textContent = total.toFixed(1);
+            });
+        }
+
+        function hideRow(id) {
+            const entry = data.entries.find(e => e.id === id);
+            if (entry) {
+                entry.hidden = true;
+                saveToStorage();
+                renderTable();
+            }
+        }
+
+        function hideEmptyRows() {
+            const weekKey = getWeekKey();
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+            
+            data.entries.forEach(entry => {
+                let hasHours = false;
+                days.forEach(day => {
+                    if (getHours(entry.id, weekKey, day) > 0) hasHours = true;
+                });
+                if (!hasHours) entry.hidden = true;
+            });
+            
+            saveToStorage();
+            renderTable();
+        }
+
+        function unhideAllRows() {
+            data.entries.forEach(e => e.hidden = false);
+            saveToStorage();
+            renderTable();
+        }
+
+        function captureHours() {
+            const weekKey = getWeekKey();
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+            let rows = [];
+            
+            data.entries.forEach(entry => {
+                if (!entry.hidden) {
+                    let row = [];
+                    // Add metadata fields
+                    row.push(entry.costCentre || '');
+                    row.push(entry.activityType || '');
+                    row.push(entry.recOrder || ''); // Empty if no value
+                    row.push(entry.attributeType || '');
+                    
+                    // Add hours for each day
+                    days.forEach(day => {
+                        row.push(getHours(entry.id, weekKey, day) || 0);
+                    });
+                    rows.push(row);
+                }
+            });
+            
+            const tsv = rows.map(r => r.join('\t')).join('\n');
+            navigator.clipboard.writeText(tsv).then(() => {
+                showAlert('Data copied! Paste into Excel (Cost Centre, Activity Type, Rec Order, Attribute Type, Mon-Fri hours).', 'success');
+            }).catch(() => {
+                showAlert('Failed to copy', 'danger');
+            });
+        }
+
+        function showAlert(msg, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = msg;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 4000);
+        }
+
+        function downloadJSON() {
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'timesheet_data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showAlert('Data exported!', 'success');
+        }
+
+        function importJSON() {
+            const input = document.getElementById('fileInput');
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        data = JSON.parse(ev.target.result);
+                        saveToStorage();
+                        renderTable();
+                        showAlert('Data imported!', 'success');
+                    } catch(err) {
+                        showAlert('Import failed', 'danger');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function clearAllData() {
+            showConfirm('Clear all data? This cannot be undone.', () => {
+                data = { entries: [], weekData: {} };
+                saveToStorage();
+                renderTable();
+                showAlert('All data cleared', 'success');
+            });
+        }
+
+        function showConfirm(msg, callback) {
+            document.getElementById('confirmMsg').textContent = msg;
+            document.getElementById('confirmModal').classList.add('active');
+            confirmFunc = callback;
+        }
+
+        function closeConfirm() {
+            document.getElementById('confirmModal').classList.remove('active');
+            confirmFunc = null;
+        }
+
+        function doConfirm() {
+            if (confirmFunc) confirmFunc();
+            closeConfirm();
+        }
+
+        // Start the app
+        window.onload = init;
+    </script>
+</body>
+</html>
