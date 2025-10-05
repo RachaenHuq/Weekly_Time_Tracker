@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Activity Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 95%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .header h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .week-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+        }
+        
+        .week-selector label {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .week-selector input[type="date"] {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .week-nav-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .week-nav-btn {
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            min-width: 40px;
+        }
+        
+        .week-nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .week-display {
+            font-weight: 600;
+            color: #2d3748;
+            padding: 8px 16px;
+            background: white;
+            border-radius: 8px;
+            min-width: 200px;
+            text-align: center;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .view-buttons {
+            display: flex;
+            gap: 8px;
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 2px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+        
+        .view-btn {
+            padding: 10px 18px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .view-btn:hover {
+            background: #f0f4ff;
+        }
+        
+        .view-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1f2937;
+        }
+        
+        .btn-small {
+            padding: 6px 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            min-width: 36px;
+        }
+        
+        .hamburger-menu {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .hamburger-btn {
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .menu-dropdown {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: 5px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            z-index: 1000;
+            min-width: 180px;
+            overflow: hidden;
+        }
+        
+        .menu-dropdown.show {
+            display: block;
+        }
+        
+        .menu-item {
+            padding: 14px 18px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: #374151;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-item:hover {
+            background: #f8fafc;
+            color: #667eea;
+        }
+        
+        .menu-item.danger:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 12px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 1200px;
+            background: white;
+        }
+        
+        th, td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+        
+        .day-total {
+            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
+            font-weight: 700;
+            color: #5b21b6;
+            text-align: center;
+        }
+        
+        td input, td select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        td select {
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        td input[type="number"] {
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        td input[readonly] {
+            background: #f8fafc;
+            cursor: pointer;
+            border-color: #cbd5e1;
+            position: relative;
+        }
+        
+        td input:disabled, td select:disabled {
+            background: #e5e7eb;
+            cursor: not-allowed;
+            color: #9ca3af;
+        }
+        
+        td {
+            position: relative;
+        }
+        
+        .tooltip-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .tooltip-wrapper .tooltip-text {
+            visibility: hidden;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+            white-space: normal;
+            max-width: 350px;
+            width: max-content;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            z-index: 1000;
+            line-height: 1.4;
+            pointer-events: none;
+        }
+        
+        .tooltip-wrapper .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #111827;
+        }
+        
+        .tooltip-wrapper:hover .tooltip-text {
+            visibility: visible;
+        }
+        
+        .field-activity input {
+            width: 22ch;
+            min-width: 22ch;
+        }
+        
+        .field-cost input {
+            width: 10ch;
+            min-width: 10ch;
+        }
+        
+        .field-rec input {
+            width: 13ch;
+            min-width: 13ch;
+        }
+        
+        .field-comment input {
+            width: 20ch;
+            min-width: 20ch;
+        }
+        
+        .total-hours-cell {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            font-weight: 700;
+            text-align: center;
+            color: #92400e;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            max-width: 550px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .modal-body {
+            margin-bottom: 25px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .checkbox-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .checkbox-item {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item-details {
+            flex: 1;
+            font-size: 13px;
+        }
+        
+        .checkbox-item-details strong {
+            color: #374151;
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        .checkbox-item-details span {
+            color: #6b7280;
+            font-size: 12px;
+        }
+        
+        .modal-body label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .modal-body input, .modal-body select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            font-weight: 500;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Weekly Activity Tracker</h1>
+            <div class="header-buttons">
+                <button class="btn-primary" onclick="downloadJSON()">📤 Export JSON</button>
+                <button class="btn-success" onclick="importJSON()">📥 Import JSON</button>
+                <button class="btn-warning" onclick="clearCaseData()">🗑️ Clear All Case Info</button>
+                <button class="btn-danger" onclick="clearAllData()">🗑️ Clear All</button>
+            </div>
+        </div>
+        
+        <div class="week-selector">
+            <label for="weekPicker">Select Week:</label>
+            <input type="date" id="weekPicker" onchange="loadWeek()">
+            <div class="week-nav-buttons">
+                <button class="week-nav-btn" onclick="previousWeek()" title="Previous Week">⬇️</button>
+                <button class="week-nav-btn" onclick="nextWeek()" title="Next Week">⬆️</button>
+            </div>
+            <span class="week-display" id="weekDisplay"></span>
+        </div>
+        
+        <div class="controls">
+            <button class="btn-primary" onclick="showAddModal()">➕ Add Entry</button>
+            <button class="btn-success" onclick="captureHours()">📋 Capture Hours</button>
+            
+            <div class="view-buttons">
+                <button class="view-btn active" id="viewDefault" onclick="setView('default')">Default View</button>
+                <button class="view-btn" id="viewNonCase" onclick="setView('noncase')">All Non-Case</button>
+                <button class="view-btn" id="viewActiveCases" onclick="setView('active')">Active Cases</button>
+                <button class="view-btn" id="viewThisWeek" onclick="setView('week')">This Week</button>
+            </div>
+            
+            <button class="btn-secondary" onclick="openManageNonCaseModal()">📋 Select Non-Cases</button>
+            <button class="btn-primary" onclick="displaySelectedNonCases()">👁️ Display Selected</button>
+            <button class="btn-secondary" onclick="openManageClosedCasesModal()">🔒 Select Closed Cases</button>
+            <button class="btn-primary" onclick="displaySelectedClosedCases()">👁️ Display Selected</button>
+        </div>
+        
+        <div id="alertContainer"></div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Actions</th>
+                        <th>Activity</th>
+                        <th>Cost Centre</th>
+                        <th>Activity Type</th>
+                        <th>Rec Order</th>
+                        <th>Attribute Type</th>
+                        <th>Comment</th>
+                        <th>Week Total</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Total Hours</th>
+                    </tr>
+                    <tr>
+                        <td colspan="8" style="text-align: right; font-weight: 600;">Daily Totals:</td>
+                        <td class="day-total" id="totMon">0.0</td>
+                        <td class="day-total" id="totTue">0.0</td>
+                        <td class="day-total" id="totWed">0.0</td>
+                        <td class="day-total" id="totThu">0.0</td>
+                        <td class="day-total" id="totFri">0.0</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Add New Entry</div>
+            <div class="modal-body">
+                <label>Activity Name *</label>
+                <input type="text" id="modalActivity">
+                
+                <label>Entry Type *</label>
+                <select id="modalType" onchange="toggleInitialHours()">
+                    <option value="case">Case</option>
+                    <option value="non-case">Non-Case</option>
+                </select>
+                
+                <div id="initialHoursDiv">
+                    <label>Initial Accumulated Hours</label>
+                    <input type="number" id="modalInitial" value="0" step="0.5" min="0">
+                </div>
+                
+                <label>Cost Centre</label>
+                <input type="text" id="modalCost">
+                
+                <label>Activity Type</label>
+                <input type="text" id="modalActType">
+                
+                <label>Rec Order</label>
+                <input type="text" id="modalRec">
+                
+                <label>Attribute Type</label>
+                <input type="text" id="modalAttr">
+                
+                <label>Comment</label>
+                <input type="text" id="modalComment">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeAddModal()">Cancel</button>
+                <button class="btn-primary" id="modalSaveBtn" onclick="saveEntry()">Add Entry</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Confirm Action</div>
+            <div class="modal-body">
+                <p id="confirmMsg"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeConfirm()">Cancel</button>
+                <button class="btn-danger" onclick="doConfirm()">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="manageNonCaseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Select Non-Case Activities</div>
+            <div class="modal-body">
+                <p style="margin-bottom: 15px; color: #6b7280;">Select activities to display.</p>
+                <div class="checkbox-list" id="nonCaseCheckboxList"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeManageNonCaseModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveNonCaseSelection()">Save Selection</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="manageClosedCasesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Select Closed Cases</div>
+            <div class="modal-body">
+                <p style="margin-bottom: 15px; color: #6b7280;">Select closed cases to view.</p>
+                <div class="checkbox-list" id="closedCasesCheckboxList"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeManageClosedCasesModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveClosedCasesSelection()">Save Selection</button>
+            </div>
+        </div>
+    </div>
+    
+    <input type="file" id="fileInput" style="display:none" accept=".json">
+
+    <script>
+        let data = { entries: [], weekData: {} };
+        let currentWeek = null;
+        let confirmFunc = null;
+        let editingEntryId = null;
+        let currentView = 'default';
+        let customNonCaseSelection = [];
+        let customClosedCaseSelection = [];
+
+        function init() {
+            loadFromStorage();
+            setCurrentWeek();
+            renderTable();
+            
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.hamburger-menu')) {
+                    document.querySelectorAll('.menu-dropdown').forEach(menu => {
+                        menu.classList.remove('show');
+                    });
+                }
+            });
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem('timesheetData');
+            if (saved) {
+                try {
+                    data = JSON.parse(saved);
+                    data.entries.forEach(entry => {
+                        if (entry.entryType === 'case' && entry.closed === undefined) {
+                            entry.closed = false;
+                        }
+                        if (entry.closedDate === undefined) {
+                            entry.closedDate = null;
+                        }
+                    });
+                } catch(e) {
+                    console.error('Error loading data:', e);
+                }
+            }
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('timesheetData', JSON.stringify(data));
+        }
+
+        function getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            
+            if (day === 0) {
+                d.setDate(d.getDate() - 6);
+            } else if (day === 6) {
+                d.setDate(d.getDate() - 5);
+            } else {
+                const diff = d.getDate() - day + 1;
+                d.setDate(diff);
+            }
+            
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function setCurrentWeek() {
+            const today = new Date();
+            currentWeek = getWeekStart(today);
+            document.getElementById('weekPicker').value = formatDate(currentWeek);
+            updateWeekDisplay();
+        }
+
+        function loadWeek() {
+            const selected = document.getElementById('weekPicker').value;
+            if (selected) {
+                currentWeek = getWeekStart(new Date(selected));
+            }
+            updateWeekDisplay();
+            renderTable();
+        }
+
+        function updateWeekDisplay() {
+            const friday = new Date(currentWeek);
+            friday.setDate(friday.getDate() + 4);
+            
+            const opts = { month: 'short', day: 'numeric', year: 'numeric' };
+            const startStr = currentWeek.toLocaleDateString('en-US', opts);
+            const endStr = friday.toLocaleDateString('en-US', opts);
+            
+            document.getElementById('weekDisplay').textContent = `${startStr} - ${endStr}`;
+            document.getElementById('weekPicker').value = formatDate(currentWeek);
+        }
+
+        function previousWeek() {
+            currentWeek.setDate(currentWeek.getDate() - 7);
+            updateWeekDisplay();
+            renderTable();
+        }
+
+        function nextWeek() {
+            currentWeek.setDate(currentWeek.getDate() + 7);
+            updateWeekDisplay();
+            renderTable();
+        }
+
+        function getWeekKey() {
+            return formatDate(currentWeek);
+        }
+
+        function showAddModal() {
+            editingEntryId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Entry';
+            document.getElementById('modalSaveBtn').textContent = 'Add Entry';
+            document.getElementById('addModal').classList.add('active');
+            document.getElementById('modalActivity').value = '';
+            document.getElementById('modalType').value = 'case';
+            document.getElementById('modalInitial').value = '0';
+            document.getElementById('modalCost').value = '128655101';
+            document.getElementById('modalActType').value = '';
+            document.getElementById('modalRec').value = '';
+            document.getElementById('modalAttr').value = '';
+            document.getElementById('modalComment').value = '';
+            toggleInitialHours();
+            prefillCaseDefaults();
+        }
+
+        function toggleInitialHours() {
+            const type = document.getElementById('modalType').value;
+            const div = document.getElementById('initialHoursDiv');
+            div.style.display = type === 'case' ? 'block' : 'none';
+            
+            if (type === 'case' && !editingEntryId) {
+                prefillCaseDefaults();
+            }
+        }
+
+        function prefillCaseDefaults() {
+            const type = document.getElementById('modalType').value;
+            if (type === 'case' && !editingEntryId) {
+                document.getElementById('modalActivity').value = 'COOR. REVIEW';
+                document.getElementById('modalActType').value = '614';
+                document.getElementById('modalAttr').value = 'Regular Attendance';
+            }
+        }
+
+        function openEditModal(entryId) {
+            const entry = data.entries.find(e => e.id === entryId);
+            if (!entry) return;
+            
+            editingEntryId = entryId;
+            document.getElementById('modalTitle').textContent = 'Edit Entry';
+            document.getElementById('modalSaveBtn').textContent = 'Save Changes';
+            document.getElementById('addModal').classList.add('active');
+            document.getElementById('modalActivity').value = entry.activity;
+            document.getElementById('modalType').value = entry.entryType;
+            document.getElementById('modalInitial').value = entry.totalHours || 0;
+            document.getElementById('modalCost').value = entry.costCentre || '';
+            document.getElementById('modalActType').value = entry.activityType || '';
+            document.getElementById('modalRec').value = entry.recOrder || '';
+            document.getElementById('modalAttr').value = entry.attributeType || '';
+            document.getElementById('modalComment').value = entry.comment || '';
+            toggleInitialHours();
+        }
+
+        function closeAddModal() {
+            const modal = document.getElementById('addModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+            editingEntryId = null;
+        }
+
+        function saveEntry() {
+            const activity = document.getElementById('modalActivity').value.trim();
+            if (!activity) {
+                showAlert('Please enter an activity name', 'danger');
+                return;
+            }
+
+            const type = document.getElementById('modalType').value;
+            const initial = parseFloat(document.getElementById('modalInitial').value) || 0;
+
+            if (editingEntryId) {
+                const entry = data.entries.find(e => e.id === editingEntryId);
+                if (entry) {
+                    entry.activity = activity;
+                    entry.entryType = type;
+                    entry.totalHours = type === 'case' ? initial : 0;
+                    entry.costCentre = document.getElementById('modalCost').value;
+                    entry.activityType = document.getElementById('modalActType').value;
+                    entry.recOrder = document.getElementById('modalRec').value;
+                    entry.attributeType = document.getElementById('modalAttr').value;
+                    entry.comment = document.getElementById('modalComment').value;
+                    
+                    saveToStorage();
+                    renderTable();
+                    closeAddModal();
+                    showAlert('Entry updated successfully!', 'success');
+                }
+            } else {
+                if (type === 'non-case') {
+                    const exists = data.entries.find(e => 
+                        e.entryType === 'non-case' && 
+                        e.activity.toLowerCase() === activity.toLowerCase()
+                    );
+                    if (exists) {
+                        showAlert('A non-case entry with this activity name already exists.', 'danger');
+                        return;
+                    }
+                }
+
+                const entry = {
+                    id: Date.now().toString(),
+                    activity: activity,
+                    entryType: type,
+                    costCentre: document.getElementById('modalCost').value,
+                    activityType: document.getElementById('modalActType').value,
+                    recOrder: document.getElementById('modalRec').value,
+                    attributeType: document.getElementById('modalAttr').value,
+                    comment: document.getElementById('modalComment').value,
+                    totalHours: type === 'case' ? initial : 0,
+                    hidden: false,
+                    closed: false
+                };
+
+                data.entries.push(entry);
+                saveToStorage();
+                renderTable();
+                closeAddModal();
+                showAlert('Entry added successfully!', 'success');
+            }
+        }
+
+        function setView(view) {
+            currentView = view;
+            
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if (view === 'default') document.getElementById('viewDefault').classList.add('active');
+            else if (view === 'noncase') document.getElementById('viewNonCase').classList.add('active');
+            else if (view === 'active') document.getElementById('viewActiveCases').classList.add('active');
+            else if (view === 'week') document.getElementById('viewThisWeek').classList.add('active');
+            
+            renderTable();
+        }
+
+        function getFilteredEntries() {
+            const weekKey = getWeekKey();
+            
+            if (currentView === 'default') {
+                const nonCaseWithHours = data.entries
+                    .filter(e => e.entryType === 'non-case' && !e.hidden)
+                    .map(e => {
+                        const totalHours = calculateTotalHoursForEntry(e.id);
+                        return { ...e, calculatedTotal: totalHours };
+                    })
+                    .sort((a, b) => b.calculatedTotal - a.calculatedTotal)
+                    .slice(0, 10);
+                
+                const activeCases = data.entries.filter(e => 
+                    e.entryType === 'case' && !e.closed
+                );
+                
+                return [...nonCaseWithHours, ...activeCases];
+                
+            } else if (currentView === 'noncase') {
+                return data.entries.filter(e => e.entryType === 'non-case');
+                
+            } else if (currentView === 'customnoncase') {
+                return data.entries.filter(e => 
+                    e.entryType === 'non-case' && customNonCaseSelection.includes(e.id)
+                );
+                
+            } else if (currentView === 'closedcases') {
+                return data.entries.filter(e => 
+                    e.entryType === 'case' && e.closed && customClosedCaseSelection.includes(e.id)
+                );
+                
+            } else if (currentView === 'active') {
+                return data.entries.filter(e => 
+                    e.entryType === 'case' && !e.closed
+                );
+                
+            } else if (currentView === 'week') {
+                return data.entries.filter(e => {
+                    if (e.hidden) return false;
+                    const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+                    return days.some(day => getHours(e.id, weekKey, day) > 0);
+                });
+            }
+            
+            return [];
+        }
+
+        function calculateTotalHoursForEntry(entryId) {
+            let total = 0;
+            Object.keys(data.weekData).forEach(weekKey => {
+                if (data.weekData[weekKey][entryId]) {
+                    const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+                    days.forEach(day => {
+                        total += data.weekData[weekKey][entryId][day] || 0;
+                    });
+                }
+            });
+            return total;
+        }
+
+        function calculateWeekTotal(entryId, weekKey) {
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+            let total = 0;
+            days.forEach(day => {
+                total += getHours(entryId, weekKey, day);
+            });
+            return total;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            const weekKey = getWeekKey();
+
+            const filteredEntries = getFilteredEntries();
+
+            filteredEntries.forEach(entry => {
+                const row = tbody.insertRow();
+                
+                const actCell = row.insertCell();
+                actCell.style.whiteSpace = 'nowrap';
+                
+                const hamburger = document.createElement('div');
+                hamburger.className = 'hamburger-menu';
+                
+                const hamburgerBtn = document.createElement('button');
+                hamburgerBtn.className = 'hamburger-btn';
+                hamburgerBtn.textContent = '☰';
+                hamburgerBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    toggleMenu(entry.id);
+                };
+                
+                const menuDropdown = document.createElement('div');
+                menuDropdown.className = 'menu-dropdown';
+                menuDropdown.id = 'menu-' + entry.id;
+                
+                const editItem = document.createElement('div');
+                editItem.className = 'menu-item';
+                editItem.textContent = '✏️ Edit';
+                editItem.onclick = () => { closeAllMenus(); openEditModal(entry.id); };
+                menuDropdown.appendChild(editItem);
+                
+                const hideItem = document.createElement('div');
+                hideItem.className = 'menu-item';
+                hideItem.textContent = '👁️ Hide';
+                hideItem.onclick = () => { closeAllMenus(); hideRow(entry.id); };
+                menuDropdown.appendChild(hideItem);
+                
+                const deleteItem = document.createElement('div');
+                deleteItem.className = 'menu-item danger';
+                deleteItem.textContent = '🗑️ Delete';
+                deleteItem.onclick = () => { closeAllMenus(); deleteEntry(entry.id); };
+                menuDropdown.appendChild(deleteItem);
+                
+                if (entry.entryType === 'case') {
+                    if (entry.closed) {
+                        const reopenItem = document.createElement('div');
+                        reopenItem.className = 'menu-item';
+                        reopenItem.textContent = '🔓 Reopen Case';
+                        reopenItem.onclick = () => { closeAllMenus(); reopenCase(entry.id); };
+                        menuDropdown.appendChild(reopenItem);
+                    } else {
+                        const closeItem = document.createElement('div');
+                        closeItem.className = 'menu-item';
+                        closeItem.textContent = '🔒 Close Case';
+                        closeItem.onclick = () => { closeAllMenus(); closeCase(entry.id); };
+                        menuDropdown.appendChild(closeItem);
+                    }
+                }
+                
+                hamburger.appendChild(hamburgerBtn);
+                hamburger.appendChild(menuDropdown);
+                actCell.appendChild(hamburger);
+
+                addLockedCell(row, entry, 'activity');
+                addLockedCell(row, entry, 'costCentre');
+                addLockedCell(row, entry, 'activityType');
+                addLockedCell(row, entry, 'recOrder');
+                addLockedCell(row, entry, 'attributeType');
+                addLockedCell(row, entry, 'comment');
+
+                const weekTotalCell = row.insertCell();
+                weekTotalCell.className = 'total-hours-cell';
+                weekTotalCell.textContent = calculateWeekTotal(entry.id, weekKey).toFixed(1);
+
+                const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+                const isClosed = entry.entryType === 'case' && entry.closed;
+                
+                days.forEach(day => {
+                    const cell = row.insertCell();
+                    const select = document.createElement('select');
+                    
+                    const emptyOption = document.createElement('option');
+                    emptyOption.value = '';
+                    emptyOption.textContent = '-';
+                    select.appendChild(emptyOption);
+                    
+                    for (let i = 0; i <= 12; i += 0.5) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = i.toFixed(1);
+                        select.appendChild(option);
+                    }
+                    
+                    const currentValue = getHours(entry.id, weekKey, day);
+                    select.value = currentValue || '';
+                    
+                    if (isClosed) {
+                        select.disabled = true;
+                        select.style.background = '#e5e7eb';
+                        select.style.cursor = 'not-allowed';
+                        select.title = 'Case is closed';
+                    } else {
+                        select.onchange = () => setHours(entry.id, weekKey, day, select.value);
+                    }
+                    
+                    cell.appendChild(select);
+                });
+
+                const totCell = row.insertCell();
+                totCell.className = 'total-hours-cell';
+                totCell.textContent = entry.entryType === 'case' ? entry.totalHours.toFixed(1) : '-';
+            });
+
+            updateDailyTotals();
+        }
+
+        function addLockedCell(row, entry, field) {
+            const cell = row.insertCell();
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'tooltip-wrapper';
+            
+            const inp = document.createElement('input');
+            inp.type = 'text';
+            inp.value = entry[field] || '';
+            inp.setAttribute('readonly', 'true');
+            
+            const tooltipText = document.createElement('span');
+            tooltipText.className = 'tooltip-text';
+            tooltipText.textContent = entry[field] || '';
+            
+            wrapper.appendChild(inp);
+            wrapper.appendChild(tooltipText);
+            
+            if (field === 'activity') cell.className = 'field-activity';
+            else if (field === 'costCentre') cell.className = 'field-cost';
+            else if (field === 'recOrder') cell.className = 'field-rec';
+            else if (field === 'comment') cell.className = 'field-comment';
+            
+            cell.appendChild(wrapper);
+        }
+
+        function toggleMenu(entryId) {
+            const menu = document.getElementById('menu-' + entryId);
+            const isShowing = menu.classList.contains('show');
+            
+            closeAllMenus();
+            
+            if (!isShowing) {
+                menu.classList.add('show');
+            }
+        }
+
+        function closeAllMenus() {
+            document.querySelectorAll('.menu-dropdown').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
+
+        function closeCase(entryId) {
+            showConfirm('Close this case? It will be hidden and hours cannot be logged to it.', () => {
+                const entry = data.entries.find(e => e.id === entryId);
+                if (entry) {
+                    entry.closed = true;
+                    entry.hidden = true;
+                    entry.closedDate = new Date().toISOString();
+                    saveToStorage();
+                    renderTable();
+                    showAlert('Case closed and hidden', 'success');
+                }
+            });
+        }
+
+        function reopenCase(entryId) {
+            showConfirm('Reopen this case? You will be able to log hours to it again.', () => {
+                const entry = data.entries.find(e => e.id === entryId);
+                if (entry) {
+                    entry.closed = false;
+                    saveToStorage();
+                    renderTable();
+                    showAlert('Case reopened', 'success');
+                }
+            });
+        }
+
+        function getHours(entryId, weekKey, day) {
+            if (!data.weekData[weekKey]) return 0;
+            if (!data.weekData[weekKey][entryId]) return 0;
+            return data.weekData[weekKey][entryId][day] || 0;
+        }
+
+        function setHours(entryId, weekKey, day, value) {
+            if (!data.weekData[weekKey]) data.weekData[weekKey] = {};
+            if (!data.weekData[weekKey][entryId]) data.weekData[weekKey][entryId] = {};
+            
+            const old = data.weekData[weekKey][entryId][day] || 0;
+            const newVal = parseFloat(value) || 0;
+            data.weekData[weekKey][entryId][day] = newVal;
+
+            const entry = data.entries.find(e => e.id === entryId);
+            if (entry && entry.entryType === 'case') {
+                entry.totalHours = entry.totalHours - old + newVal;
+            }
+
+            saveToStorage();
+            updateDailyTotals();
+            renderTable();
+        }
+
+        function updateDailyTotals() {
+            const weekKey = getWeekKey();
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+            const ids = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
+            days.forEach((day, i) => {
+                let total = 0;
+                data.entries.forEach(entry => {
+                    if (!entry.hidden) {
+                        total += getHours(entry.id, weekKey, day);
+                    }
+                });
+                document.getElementById(`tot${ids[i]}`).textContent = total.toFixed(1);
+            });
+        }
+
+        function hideRow(entryId) {
+            showConfirm('Hide this entry from view?', () => {
+                const entry = data.entries.find(e => e.id === entryId);
+                if (entry) {
+                    entry.hidden = true;
+                    saveToStorage();
+                    renderTable();
+                    showAlert('Entry hidden', 'success');
+                }
+            });
+        }
+
+        function captureHours() {
+            const weekKey = getWeekKey();
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+            let rows = [];
+            
+            const filteredEntries = getFilteredEntries();
+            
+            filteredEntries.forEach(entry => {
+                let row = [];
+                row.push("'" + (entry.costCentre || ''));
+                row.push("'" + (entry.activityType || ''));
+                row.push("'" + (entry.recOrder || ''));
+                row.push("'" + (entry.attributeType || ''));
+                
+                days.forEach(day => {
+                    const hours = getHours(entry.id, weekKey, day) || 0;
+                    row.push(hours);
+                });
+                rows.push(row);
+            });
+            
+            const tsv = rows.map(r => r.join('\t')).join('\n');
+            
+            navigator.clipboard.writeText(tsv).then(() => {
+                showAlert('Data copied! Ready to paste into Excel.', 'success');
+            }).catch(() => {
+                showAlert('Failed to copy to clipboard', 'danger');
+            });
+        }
+
+        function openManageNonCaseModal() {
+            const modal = document.getElementById('manageNonCaseModal');
+            const list = document.getElementById('nonCaseCheckboxList');
+            list.innerHTML = '';
+            
+            const nonCaseEntries = data.entries.filter(e => e.entryType === 'non-case');
+            
+            if (nonCaseEntries.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #9ca3af; padding: 20px;">No non-case activities found</p>';
+            } else {
+                nonCaseEntries.forEach(entry => {
+                    const item = document.createElement('div');
+                    item.className = 'checkbox-item';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = 'nc-' + entry.id;
+                    checkbox.checked = customNonCaseSelection.length === 0 ? !entry.hidden : customNonCaseSelection.includes(entry.id);
+                    
+                    const details = document.createElement('div');
+                    details.className = 'checkbox-item-details';
+                    details.innerHTML = `
+                        <strong>${entry.activity}</strong>
+                        <span>Type: ${entry.activityType || 'N/A'} | Attribute: ${entry.attributeType || 'N/A'}</span>
+                    `;
+                    
+                    item.appendChild(checkbox);
+                    item.appendChild(details);
+                    list.appendChild(item);
+                });
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeManageNonCaseModal() {
+            const modal = document.getElementById('manageNonCaseModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function saveNonCaseSelection() {
+            try {
+                const nonCaseEntries = data.entries.filter(e => e.entryType === 'non-case');
+                customNonCaseSelection = [];
+                
+                nonCaseEntries.forEach(entry => {
+                    const checkbox = document.getElementById('nc-' + entry.id);
+                    if (checkbox && checkbox.checked) {
+                        customNonCaseSelection.push(entry.id);
+                    }
+                });
+                
+                closeManageNonCaseModal();
+                showAlert(`${customNonCaseSelection.length} non-case activities selected. Click "Display Selected" to view.`, 'success');
+            } catch (error) {
+                console.error('Error in saveNonCaseSelection:', error);
+                showAlert('Error saving selection: ' + error.message, 'danger');
+            }
+        }
+
+        function displaySelectedNonCases() {
+            try {
+                if (!customNonCaseSelection || customNonCaseSelection.length === 0) {
+                    showAlert('No non-case activities selected. Use "Select Non-Cases" first.', 'danger');
+                    return;
+                }
+                
+                document.querySelectorAll('.view-btn').forEach(btn => {
+                    if (btn) btn.classList.remove('active');
+                });
+                
+                currentView = 'customnoncase';
+                renderTable();
+                showAlert(`Displaying ${customNonCaseSelection.length} selected non-case activities`, 'success');
+            } catch (error) {
+                console.error('Error in displaySelectedNonCases:', error);
+                showAlert('Error displaying selection: ' + error.message, 'danger');
+            }
+        }
+
+        function openManageClosedCasesModal() {
+            const modal = document.getElementById('manageClosedCasesModal');
+            const list = document.getElementById('closedCasesCheckboxList');
+            list.innerHTML = '';
+            
+            const closedCases = data.entries
+                .filter(e => e.entryType === 'case' && e.closed)
+                .sort((a, b) => {
+                    const dateA = a.closedDate ? new Date(a.closedDate) : new Date(0);
+                    const dateB = b.closedDate ? new Date(b.closedDate) : new Date(0);
+                    return dateB - dateA;
+                });
+            
+            if (closedCases.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #9ca3af; padding: 20px;">No closed cases found</p>';
+            } else {
+                closedCases.forEach(entry => {
+                    const item = document.createElement('div');
+                    item.className = 'checkbox-item';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = 'cc-' + entry.id;
+                    checkbox.checked = customClosedCaseSelection.includes(entry.id);
+                    
+                    const closedDateStr = entry.closedDate 
+                        ? new Date(entry.closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : 'Unknown';
+                    
+                    const details = document.createElement('div');
+                    details.className = 'checkbox-item-details';
+                    details.innerHTML = `
+                        <strong>${entry.activity}</strong>
+                        <span>Comment: ${entry.comment || 'N/A'} | Closed: ${closedDateStr}</span>
+                    `;
+                    
+                    item.appendChild(checkbox);
+                    item.appendChild(details);
+                    list.appendChild(item);
+                });
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeManageClosedCasesModal() {
+            const modal = document.getElementById('manageClosedCasesModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function saveClosedCasesSelection() {
+            try {
+                const closedCases = data.entries.filter(e => e.entryType === 'case' && e.closed);
+                customClosedCaseSelection = [];
+                
+                closedCases.forEach(entry => {
+                    const checkbox = document.getElementById('cc-' + entry.id);
+                    if (checkbox && checkbox.checked) {
+                        customClosedCaseSelection.push(entry.id);
+                    }
+                });
+                
+                closeManageClosedCasesModal();
+                showAlert(`${customClosedCaseSelection.length} closed cases selected. Click "Display Selected" to view.`, 'success');
+            } catch (error) {
+                console.error('Error in saveClosedCasesSelection:', error);
+                showAlert('Error saving selection: ' + error.message, 'danger');
+            }
+        }
+
+        function displaySelectedClosedCases() {
+            try {
+                if (!customClosedCaseSelection || customClosedCaseSelection.length === 0) {
+                    showAlert('No closed cases selected. Use "Select Closed Cases" first.', 'danger');
+                    return;
+                }
+                
+                document.querySelectorAll('.view-btn').forEach(btn => {
+                    if (btn) btn.classList.remove('active');
+                });
+                
+                currentView = 'closedcases';
+                renderTable();
+                showAlert(`Displaying ${customClosedCaseSelection.length} selected closed cases`, 'success');
+            } catch (error) {
+                console.error('Error in displaySelectedClosedCases:', error);
+                showAlert('Error displaying selection: ' + error.message, 'danger');
+            }
+        }
+
+        function showAlert(msg, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = msg;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 4000);
+        }
+
+        function deleteEntry(entryId) {
+            const entry = data.entries.find(e => e.id === entryId);
+            const entryName = entry ? entry.activity : 'this entry';
+            
+            showConfirm(`Delete "${entryName}"? This will permanently remove the entry and all its hours data.`, () => {
+                data.entries = data.entries.filter(e => e.id !== entryId);
+                
+                Object.keys(data.weekData).forEach(weekKey => {
+                    if (data.weekData[weekKey][entryId]) {
+                        delete data.weekData[weekKey][entryId];
+                    }
+                });
+                
+                saveToStorage();
+                renderTable();
+                showAlert('Entry deleted successfully', 'success');
+            });
+        }
+
+        function downloadJSON() {
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'timesheet_data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showAlert('Data exported!', 'success');
+        }
+
+        function importJSON() {
+            const input = document.getElementById('fileInput');
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        data = JSON.parse(ev.target.result);
+                        saveToStorage();
+                        renderTable();
+                        showAlert('Data imported!', 'success');
+                    } catch(err) {
+                        showAlert('Import failed', 'danger');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function clearAllData() {
+            showConfirm('Clear all data? This action cannot be undone.', () => {
+                data = { entries: [], weekData: {} };
+                saveToStorage();
+                renderTable();
+                showAlert('All data cleared', 'success');
+            });
+        }
+
+        function clearCaseData() {
+            showConfirm('Clear all case entries? This will permanently delete all case-type activities and their hours.', () => {
+                data.entries = data.entries.filter(e => e.entryType !== 'case');
+                
+                Object.keys(data.weekData).forEach(weekKey => {
+                    const validEntryIds = data.entries.map(e => e.id);
+                    Object.keys(data.weekData[weekKey]).forEach(entryId => {
+                        if (!validEntryIds.includes(entryId)) {
+                            delete data.weekData[weekKey][entryId];
+                        }
+                    });
+                });
+                
+                saveToStorage();
+                renderTable();
+                showAlert('All case entries cleared', 'success');
+            });
+        }
+
+        function showConfirm(message, callback) {
+            document.getElementById('confirmMsg').textContent = message;
+            document.getElementById('confirmModal').classList.add('active');
+            confirmFunc = callback;
+        }
+
+        function closeConfirm() {
+            const modal = document.getElementById('confirmModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+            confirmFunc = null;
+        }
+
+        function doConfirm() {
+            if (confirmFunc) confirmFunc();
+            closeConfirm();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
